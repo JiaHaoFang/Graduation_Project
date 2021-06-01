@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var SaveDataFlag bool = false
+var SaveDataFlag bool = true
 
 /*
 	@note:this function uses concurrent calculation to boost the comparision between 3
