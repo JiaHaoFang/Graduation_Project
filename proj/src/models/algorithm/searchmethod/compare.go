@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var SaveDataFlag bool = true
+var SaveDataFlag bool = false
 
 /*
 	@note:this function uses concurrent calculation to boost the comparision between 3
@@ -33,7 +33,7 @@ func Compare(row, col int, dense float64, costL, costH int, start, end [2]int, i
 	var wg sync.WaitGroup
 	datachan := make(chan map[string]interface{}, 10)
 
-	wg.Add(7)
+	wg.Add(4)
 	go func() {
 		tstart := time.Now()
 		c1, s1, t1 := DijkstraForGrid(feasibleMap, retMap, start, end)
@@ -84,59 +84,11 @@ func Compare(row, col int, dense float64, costL, costH int, start, end [2]int, i
 	}()
 	go func() {
 		tstart := time.Now()
-		c3, s3, t3 := AstarSearchDijkstra(feasibleMap, retMap, start, end, HalmintanDistance)
-		timecost := time.Since(tstart)
-		fmt.Println("Task of Dijkstra with A* is over, the total step is", s3, "and the cost is", c3, " time expired ", timecost)
-		data := make(map[string]interface{})
-		data["MOA"] = 1
-		data["cost"] = c3
-		data["total"] = s3
-		data["tract"] = t3
-		if SaveDataFlag {
-			datatrans.OutputTract(filename+"_DijkstraAstar_", t3, id)
-		}
-		datachan <- data
-		wg.Done()
-	}()
-	go func() {
-		tstart := time.Now()
-		c3, s3, t3 := BfsSearch(feasibleMap, retMap, start, end)
-		timecost := time.Since(tstart)
-		fmt.Println("Task of bfs is over, the total step is", s3, "and the cost is", c3, " time expired ", timecost)
-		data := make(map[string]interface{})
-		data["BFS"] = 1
-		data["cost"] = c3
-		data["total"] = s3
-		data["tract"] = t3
-		if SaveDataFlag {
-			datatrans.OutputTract(filename+"_bfs_", t3, id)
-		}
-		datachan <- data
-		wg.Done()
-	}()
-	go func() {
-		tstart := time.Now()
 		c3, s3, t3 := JPS(feasibleMap, 10, start, end, _HalmintanDistance)
 		timecost := time.Since(tstart)
-		fmt.Println("Task of JPS is over, the total step is", s3, "and the cost is", c3, t3, " time expired ", timecost)
+		fmt.Println("Task of JPS is over, the total step is", s3, "and the cost is", c3, " time expired ", timecost)
 		data := make(map[string]interface{})
 		data["JPS"] = 1
-		data["cost"] = c3
-		data["total"] = s3
-		data["tract"] = t3
-		if SaveDataFlag {
-			datatrans.OutputTract(filename+"_DijkstraAstar_", t3, id)
-		}
-		datachan <- data
-		wg.Done()
-	}()
-	go func() {
-		tstart := time.Now()
-		c3, s3, t3 := BidirectionAstarDijkstra_Normal(feasibleMap, retMap, start, end, HalmintanDistance)
-		timecost := time.Since(tstart)
-		fmt.Println("Task of BIMOA* is over, the total step is", s3, "and the cost is", c3, " time expired ", timecost)
-		data := make(map[string]interface{})
-		data["BIMOA"] = 1
 		data["cost"] = c3
 		data["total"] = s3
 		data["tract"] = t3

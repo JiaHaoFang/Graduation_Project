@@ -2,6 +2,7 @@ package algorithm
 
 import (
 	"container/heap"
+	"math"
 )
 
 const (
@@ -93,10 +94,8 @@ func JPS(feasibleMap [][]int, costVert int, start [2]int, target [2]int, hvalue 
 		if flag {
 			break
 		}
-
 		relaxPoint := heap.Pop(&openList).(*_Node)
 		step++
-
 		for _, v := range relaxPoint.ForceList {
 			if flag {
 				break
@@ -123,13 +122,13 @@ func JPS(feasibleMap [][]int, costVert int, start [2]int, target [2]int, hvalue 
 					Hvalue: p.Hvalue,
 				}
 				for getNodeStatus(current) != int(Occupied) {
-					if getNodeStatus(current) == int(Exploring) {
-						current.X = current.X + v.Dealt_X
-						current.Gvalue = current.Gvalue + costVert
-						current.Parent = &p
-						current.Cost = current.Gvalue + hvalue(current.X, current.Y, target[0], target[1])
-						continue
-					}
+					// if getNodeStatus(current) == int(Exploring) {
+					// 	current.X = current.X + v.Dealt_X
+					// 	current.Gvalue = current.Gvalue + costVert
+					// 	current.Parent = &p
+					// 	current.Cost = current.Gvalue + hvalue(current.X, current.Y, target[0], target[1])
+					// 	continue
+					// }
 					forceList := getForceNeigborList(current, v, 0)
 					if len(forceList) != 0 {
 						current.ForceList = forceList
@@ -151,11 +150,26 @@ func JPS(feasibleMap [][]int, costVert int, start [2]int, target [2]int, hvalue 
 					//獲取目標，開始提取路徑
 					if current.X == target[0] && current.Y == target[1] {
 						feasibleG[p.X][p.Y] = int(Exploring)
-						fcost = current.Cost
+						// fcost = current.Cost
+						// for current.Parent != nil {
+						// 	tract = append(tract, [2]int{current.X, current.Y})
+						// 	current = *current.Parent
+						// }
+						// fcost = current.Cost
+						// fcost = 0
 						for current.Parent != nil {
 							tract = append(tract, [2]int{current.X, current.Y})
+							deltax := (current.X - current.Parent.X) * costVert
+							deltay := (current.Y - current.Parent.Y) * costVert
+							if deltax != 0 && deltay != 0 {
+								fcost = fcost + int(math.Abs(float64(deltax)*1.4))
+							} else {
+								fcost = fcost + deltax + deltay
+							}
 							current = *current.Parent
+
 						}
+						fcost = 1
 						return
 					}
 				}
@@ -169,13 +183,13 @@ func JPS(feasibleMap [][]int, costVert int, start [2]int, target [2]int, hvalue 
 					Hvalue: p.Hvalue,
 				}
 				for getNodeStatus(current) != int(Occupied) {
-					if getNodeStatus(current) == int(Exploring) {
-						current.Y = current.Y + v.Dealt_Y
-						current.Gvalue = current.Gvalue + costVert
-						current.Parent = &p
-						current.Cost = current.Gvalue + hvalue(current.X, current.Y, target[0], target[1])
-						continue
-					}
+					// if getNodeStatus(current) == int(Exploring) {
+					// 	current.Y = current.Y + v.Dealt_Y
+					// 	current.Gvalue = current.Gvalue + costVert
+					// 	current.Parent = &p
+					// 	current.Cost = current.Gvalue + hvalue(current.X, current.Y, target[0], target[1])
+					// 	continue
+					// }
 					forceList := getForceNeigborList(current, v, 0)
 					if len(forceList) != 0 {
 						current.ForceList = forceList
@@ -197,11 +211,21 @@ func JPS(feasibleMap [][]int, costVert int, start [2]int, target [2]int, hvalue 
 					//獲取目標，開始提取路徑
 					if current.X == target[0] && current.Y == target[1] {
 						feasibleG[p.X][p.Y] = int(Exploring)
-						fcost = current.Cost
+						// fcost = current.Cost
+						// fcost = 0
 						for current.Parent != nil {
 							tract = append(tract, [2]int{current.X, current.Y})
+							deltax := (current.X - current.Parent.X) * costVert
+							deltay := (current.Y - current.Parent.Y) * costVert
+							if deltax != 0 && deltay != 0 {
+								fcost = fcost + int(math.Abs(float64(deltax)*1.4))
+							} else {
+								fcost = fcost + deltax + deltay
+							}
 							current = *current.Parent
+
 						}
+						fcost = 1
 						return
 					}
 				}
@@ -212,6 +236,7 @@ func JPS(feasibleMap [][]int, costVert int, start [2]int, target [2]int, hvalue 
 			}
 		}
 	}
+	// fcost = 1
 	return
 }
 
